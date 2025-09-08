@@ -1,22 +1,21 @@
 #!/bin/bash
 #
-# Skrip Build OrangeFox Recovery - VERSI FINAL
-# Disesuaikan agar sangat presisi dengan konfigurasi Cirrus CI.
+# Skrip Build OrangeFox Recovery - VERSI OTOMATIS FINAL
+# Skrip ini mengotomatiskan semua langkah yang diperlukan.
 # =================================================================
 
 set -e
 
 # --- 1. Mengambil Variabel Lingkungan ---
-echo "--- Membaca variabel lingkungan dari Cirrus CI ---"
+echo "========================================"
+echo "Memulai Build OrangeFox Recovery"
+echo "----------------------------------------"
 export MANIFEST_BRANCH="${MANIFEST_BRANCH}"
 export DEVICE_TREE_URL="${DEVICE_TREE}"
 export DEVICE_TREE_BRANCH="${DEVICE_BRANCH}"
 export DEVICE_CODENAME="${DEVICE_CODENAME}"
 export BUILD_TARGET="${TARGET_RECOVERY_IMAGE}"
 
-echo "========================================"
-echo "Memulai Build OrangeFox Recovery (Revisi Akhir)"
-echo "----------------------------------------"
 echo "Manifest Branch   : ${MANIFEST_BRANCH}"
 echo "Device Tree URL   : ${DEVICE_TREE_URL}"
 echo "Device Branch     : ${DEVICE_TREE_BRANCH}"
@@ -27,7 +26,7 @@ echo "========================================"
 # Variabel tambahan
 WORKDIR=$(pwd)
 export GITHUB_WORKSPACE=$WORKDIR
-export VENDOR_NAME="generic"
+export VENDOR_NAME="infinix"
 
 # --- 2. Persiapan Lingkungan Build ---
 echo "--- Berada di direktori `$(pwd)` ---"
@@ -61,29 +60,53 @@ echo "--- Sinkronisasi selesai. ---"
 echo "--- Memeriksa keberadaan device tree di direktori sementara... ---"
 if [ -d "device/generic/twrp" ]; then
     echo "--- Direktori ditemukan. Memindahkan ke lokasi permanen... ---"
-    mkdir -p "device/infinix"
-    mv "device/generic/twrp" "device/infinix/${DEVICE_CODENAME}"
-    echo "--- Pemindahan selesai. Device tree sekarang di: device/infinix/${DEVICE_CODENAME} ---"
+    mkdir -p "device/${VENDOR_NAME}"
+    mv "device/generic/twrp" "device/${VENDOR_NAME}/${DEVICE_CODENAME}"
+    echo "--- Pemindahan selesai. Device tree sekarang di: device/${VENDOR_NAME}/${DEVICE_CODENAME} ---"
 else
     echo "--- ERROR: Direktori device tree TIDAK DITEMUKAN. Membatalkan build. ---"
     exit 1
 fi
 
-# --- 5. Proses Kompilasi ---
-echo "--- Langkah 4: Memulai proses kompilasi... ---"
+# --- 5. Menerapkan Patch Otomatis ---
+# Patch ini memperbaiki masalah 'Android.host_config.mk'
+echo "--- Langkah 4: Menerapkan patch untuk memperbaiki bug VTS... ---"
+mkdir -p "$WORKDIR/builder/patches"
+cat > "$WORKDIR/builder/patches/fix-vts.patch" << 'EOF'
+--- a/frameworks/base/core/xsd/vts/Android.mk
++++ b/frameworks/base/core/xsd/vts/Android.mk
+@@ -19,7 +19,7 @@
+ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../test/vts-testcases/hal/xsdc
+ 
+ LOCAL_STATIC_LIBRARIES := libvts_hal_driver
+-
+-include $(TEST_VTS_PATH)/build/Android.host_config.mk
++ 
++
++include $(BUILD_HOST_STATIC_LIBRARY)
+ 
+ LOCAL_MODULE := libvts_driver_xsd
+ 
+EOF
+
+git apply -v --directory=frameworks/base "$WORKDIR/builder/patches/fix-vts.patch"
+echo "--- Patch berhasil diterapkan. ---"
+
+# --- 6. Proses Kompilasi ---
+echo "--- Langkah 5: Memulai proses kompilasi... ---"
 source build/envsetup.sh
 export ALLOW_MISSING_DEPENDENCIES=true
 export OF_PATH=${PWD}
 export FOX_PATH=${PWD}
 export RECOVERY_VARIANT=twrp
 
-echo "--- Menjalankan lunch untuk twrp_${DEVICE_CODENAME} ---"
-lunch omni_${DEVICE_CODENAME}-eng
+echo "--- Menjalankan lunch... ---"
+lunch twrp_${DEVICE_CODENAME}-eng
 echo "--- Menjalankan make... ---"
 mka adbd ${BUILD_TARGET}image
 
-# --- 6. Persiapan Hasil Build ---
-echo "--- Langkah 5: Menyiapkan hasil build... ---"
+# --- 7. Persiapan Hasil Build ---
+echo "--- Langkah 6: Menyiapkan hasil build... ---"
 RESULT_DIR="$WORKDIR/twrp/out/target/product/${DEVICE_CODENAME}"
 OUTPUT_DIR="$WORKDIR/output"
 mkdir -p "$OUTPUT_DIR"
@@ -97,7 +120,7 @@ else
     echo "--- Peringatan: File output build tidak ditemukan di ${RESULT_DIR} ---"
 fi
 
-# --- 7. Selesai ---
+# --- 8. Selesai ---
 echo "--- Build selesai! Cek folder output. ---"
 ls -lh "$OUTPUT_DIR"
 echo "========================================"
