@@ -31,9 +31,9 @@ task:
     
     # Install AOSP dependencies
     - apt-get install -y \
-      git-core gnupg flex bison gperf build-essential zip curl \
-      zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \
-      lib32ncurses5-dev lib32z1-dev
+      git gnupg flex bison gperf build-essential zip curl \
+      lib32z1 gcc-multilib g++-multilib libc6-dev-i386 \
+      lib32stdc++6 lib32z1-dev
       
     # Install additional development tools
     - apt-get install -y \
