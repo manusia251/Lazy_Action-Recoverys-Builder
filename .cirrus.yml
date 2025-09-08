@@ -44,6 +44,9 @@ task:
     
   # Install additional tools for recovery building
   - apt-get install -y lzop pngcrush schedtool libncurses5-dev nano vim
+  # Install repo tool (INI YANG BARU)
+  - curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo
+  - chmod +x /usr/local/bin/repo
     
       
   script:
