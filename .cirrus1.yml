@@ -1,0 +1,6 @@
+task:
+  name: Test Cirrus
+  container:
+    image: alpine:latest
+  script:
+    - echo "✅ Cirrus CI connected with repo manusia251"
