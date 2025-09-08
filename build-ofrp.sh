@@ -56,7 +56,8 @@ git config --global user.email "darkside@gmail.com"
 # Repositori manifest TWRP ada di GitHub TheMuppets.
 
 echo "Cloning manifest TWRP dari TheMuppets..."
-git clone --depth=1 --single-branch https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b "${MANIFEST_BRANCH}" .
+repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b ${MANIFEST_BRANCH} --depth=1
+repo sync -j$(nproc) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
 
 # 3. Clone Device Tree
 # --- PERHATIAN: Ini bagian yang diperbaiki juga! ---
