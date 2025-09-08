@@ -67,28 +67,11 @@ else
     exit 1
 fi
 
-# --- 5. Menerapkan Patch Otomatis ---
+# --- 5. Menerapkan Patch ---
 echo "--- Langkah 4: Menerapkan patch untuk memperbaiki bug VTS... ---"
-mkdir -p "$WORKDIR/builder/patches"
-cat > "$WORKDIR/builder/patches/fix-vts.patch" << 'EOF'
---- a/frameworks/base/core/xsd/vts/Android.mk
-+++ b/frameworks/base/core/xsd/vts/Android.mk
-@@ -19,7 +19,7 @@
- LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../test/vts-testcases/hal/xsdc
- 
- LOCAL_STATIC_LIBRARIES := libvts_hal_driver
--
--include $(TEST_VTS_PATH)/build/Android.host_config.mk
--
-+ 
-+
-+include $(BUILD_HOST_STATIC_LIBRARY)
- 
- LOCAL_MODULE := libvts_driver_xsd
- 
-EOF
-
-git -C twrp apply --whitespace=fix -v "$WORKDIR/builder/patches/fix-vts.patch"
+cd twrp
+git apply -v --whitespace=fix ../builder/patches/fix-vts.patch
+cd -
 echo "--- Patch berhasil diterapkan. ---"
 
 # --- 6. Proses Kompilasi ---
