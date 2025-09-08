@@ -15,18 +15,21 @@ task:
     # Update package lists
     - apt-get update
     
-    # Install build dependencies - Ubuntu 18.04 compatible
+    # Install official AOSP dependencies for Ubuntu 18.04+
     - apt-get install -y \
-      bc bison build-essential curl flex g++-multilib gcc-multilib \
-      git gnupg gperf lib32ncurses5-dev lib32z1-dev libncurses5-dev \
-      libncurses5 libncurses-dev libsdl1.2-dev libssl-dev libxml2 \
-      libxml2-utils lzop openjdk-8-jdk pngcrush schedtool \
-      squashfs-tools xsltproc zip zlib1g-dev python python3 \
-      unzip fontconfig ccache rsync
+      git-core gnupg flex bison build-essential zip curl zlib1g-dev \
+      libc6-dev-i386 x11proto-core-dev libx11-dev lib32z1-dev \
+      libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
       
-    # Install additional useful packages
+    # Install additional packages needed for recovery building
     - apt-get install -y \
-      wget ca-certificates nano vim
+      openjdk-8-jdk gcc-multilib g++-multilib lib32ncurses5-dev \
+      libncurses5-dev gperf ccache lzop pngcrush schedtool \
+      python python3 rsync bc libssl-dev
+      
+    # Install useful tools
+    - apt-get install -y \
+      wget ca-certificates nano vim screen
       
   script:
     # Configure git
