@@ -51,17 +51,24 @@ cd "$WORKDIR/twrp"
 git config --global user.name "manusia251"
 git config --global user.email "darkside@gmail.com"
 
-# Clone manifest TWRP
+# --- PERHATIAN: Ini bagian yang diperbaiki! ---
+# Kita harus clone manifest TWRP dari repositori yang benar, bukan dari device tree kamu.
+# Repositori manifest TWRP ada di GitHub TheMuppets.
+
 echo "Cloning manifest TWRP dari TheMuppets..."
-# Gunakan branch yang sesuai dengan Android version-mu (misal: android-11)
 git clone --depth=1 --single-branch https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b "${MANIFEST_BRANCH}" .
+
 # 3. Clone Device Tree
+# --- PERHATIAN: Ini bagian yang diperbaiki juga! ---
+# Clone device tree dari repositori kamu sendiri.
+
 echo "Cloning device tree..."
 mkdir -p "device/${DEVICE_CODENAME}/"
 cd "device/${DEVICE_CODENAME}/"
-git clone "$DEVICE_TREE" -b "$DEVICE_TREE_BRANCH" .
+git clone --depth=1 --single-branch "$DEVICE_TREE" -b "$DEVICE_TREE_BRANCH" .
 cd ..
 cd ..
+
 export COMMIT_ID=$(git rev-parse HEAD)
 echo "Commit ID Device Tree: $COMMIT_ID"
 
@@ -69,7 +76,7 @@ echo "Commit ID Device Tree: $COMMIT_ID"
 echo "Memulai proses kompilasi..."
 source build/envsetup.sh
 export ALLOW_MISSING_DEPENDENCIES=true
-export RECOVERY_VARIANT=twrp # Menyetel variabel untuk build TWRP
+export RECOVERY_VARIANT=twrp
 
 lunch twrp_${DEVICE_CODENAME}-eng
 make clean && mka adbd ${BUILD_TARGET}image
@@ -77,7 +84,7 @@ make clean && mka adbd ${BUILD_TARGET}image
 # 5. Persiapan Hasil Build untuk Artifacts
 echo "Memeriksa dan menyiapkan hasil build untuk artifacts..."
 RESULT_DIR="$WORKDIR/twrp/out/target/product/${DEVICE_CODENAME}"
-OUTPUT_DIR="$WORKDIR/output" # Direktori output untuk artifacts CI
+OUTPUT_DIR="$WORKDIR/output"
 mkdir -p "$OUTPUT_DIR"
 
 if [ -f "$RESULT_DIR/twrp.img" ] || [ -f "$RESULT_DIR/twrp*.zip" ]; then
