@@ -81,6 +81,7 @@ cat > "$WORKDIR/builder/patches/fix-vts.patch" << 'EOF'
  LOCAL_STATIC_LIBRARIES := libvts_hal_driver
 -
 -include $(TEST_VTS_PATH)/build/Android.host_config.mk
+-
 + 
 +
 +include $(BUILD_HOST_STATIC_LIBRARY)
@@ -89,7 +90,7 @@ cat > "$WORKDIR/builder/patches/fix-vts.patch" << 'EOF'
  
 EOF
 
-git apply -v --directory=frameworks/base "$WORKDIR/builder/patches/fix-vts.patch"
+git -C twrp apply --whitespace=fix -v "$WORKDIR/builder/patches/fix-vts.patch"
 echo "--- Patch berhasil diterapkan. ---"
 
 # --- 6. Proses Kompilasi ---
