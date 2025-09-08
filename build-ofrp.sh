@@ -40,7 +40,7 @@ git config --global user.email "darkside@gmail.com"
 
 # --- 3. Inisialisasi dan Konfigurasi Repo ---
 echo "--- Langkah 1: Inisialisasi manifest OrangeFox/TWRP... ---"
-repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b ${MANIFEST_BRANCH} --depth=1
+repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-11
 
 echo "--- Langkah 2: Membuat local manifest untuk device tree... ---"
 mkdir -p .repo/local_manifests
@@ -52,7 +52,7 @@ cat > .repo/local_manifests/twrp_device_tree.xml << EOF
 EOF
 
 echo "--- Langkah 3: Memulai sinkronisasi repositori. Mohon tunggu... ---"
-repo sync -j$(nproc) --force-sync --no-clone-bundle --no-tags --optimized-fetch --prune
+repo sync -j$(nproc) --force-sync --no-clone-bundle --no-tags
 echo "--- Sinkronisasi selesai. ---"
 
 # --- 4. Memindahkan Device Tree ke Lokasi yang Benar ---
@@ -67,12 +67,6 @@ else
     exit 1
 fi
 
-# --- 5. Menerapkan Patch ---
-echo "--- Langkah 4: Menerapkan patch untuk memperbaiki bug VTS... ---"
-cd twrp
-git apply -v --whitespace=fix ../builder/patches/fix-vts.patch
-cd -
-echo "--- Patch berhasil diterapkan. ---"
 
 # --- 6. Proses Kompilasi ---
 echo "--- Langkah 5: Memulai proses kompilasi... ---"
