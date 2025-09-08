@@ -78,7 +78,7 @@ export FOX_PATH=${PWD}
 export RECOVERY_VARIANT=twrp
 
 echo "--- Menjalankan lunch untuk twrp_${DEVICE_CODENAME} ---"
-lunch twrp_${DEVICE_CODENAME}-eng
+lunch omni_${DEVICE_CODENAME}-eng
 echo "--- Menjalankan make... ---"
 mka adbd ${BUILD_TARGET}image
 
