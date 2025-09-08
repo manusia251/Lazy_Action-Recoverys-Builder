@@ -2,33 +2,57 @@ task:
   name: Build OrangeFox X6512 (boot.img)
   container:
     image: ubuntu:20.04
-
   environment:
     MANIFEST_BRANCH: fox_11.0
     DEVICE_TREE: https://github.com/manusia251/twrp-test.git
     DEVICE_BRANCH: main
     DEVICE_CODENAME: X6512
     TARGET_RECOVERY_IMAGE: boot
-
   install_script:
+    # Update package lists
     - apt-get update
+    
+    # Install base packages first
     - DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf \
-      lib32ncurses5-dev lib32z1-dev libncurses5-dev libncurses5 \
-      libncurses-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils \
-      lzop openjdk-8-jdk pngcrush schedtool squashfs-tools xsltproc \
-      zip zlib1g-dev python-is-python3 unzip fontconfig
-
+      software-properties-common apt-utils
+    
+    # Add universe repository for additional packages
+    - add-apt-repository universe
+    - apt-get update
+    
+    # Install build dependencies (fixed package names for Ubuntu 20.04)
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      bc bison build-essential ccache curl flex g++-multilib \
+      gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev \
+      lib32readline-dev lib32z1-dev liblz4-tool \
+      libncurses5-dev libsdl1.2-dev libssl-dev libxml2 \
+      libxml2-utils lzop pngcrush rsync schedtool \
+      squashfs-tools xsltproc zip zlib1g-dev openjdk-8-jdk \
+      python3 python3-pip python-is-python3 unzip fontconfig \
+      libc6-dev libstdc++6 libgcc-s1 libc6-dev-i386
+      
+    # Install additional tools that might be needed
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      wget ca-certificates
+      
   script:
+    # Configure git
     - git config --global user.name "manusia251"
     - git config --global user.email "darkside@gmail.com"
-
-    # clone builder
+    
+    # Set up environment
+    - export USE_CCACHE=1
+    - export CCACHE_COMPRESS=1
+    
+    # Clone builder repository
     - git clone https://github.com/manusia251/Lazy_Action-Recoverys-Builder builder
     - cd builder
-
-    # build OrangeFox
+    
+    # Make build script executable
+    - chmod +x build-ofrp.sh
+    
+    # Build OrangeFox Recovery
     - bash build-ofrp.sh $DEVICE_TREE $DEVICE_BRANCH $DEVICE_CODENAME $MANIFEST_BRANCH $TARGET_RECOVERY_IMAGE
-
+    
   artifacts:
     path: builder/output/**/*
