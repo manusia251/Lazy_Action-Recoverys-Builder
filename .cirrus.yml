@@ -1,0 +1,34 @@
+task:
+  name: Build OrangeFox X6512 (boot.img)
+  container:
+    image: ubuntu:20.04
+
+  environment:
+    MANIFEST_BRANCH: fox_11.0
+    DEVICE_TREE: https://github.com/manusia251/twrp-test.git
+    DEVICE_BRANCH: main
+    DEVICE_CODENAME: X6512
+    TARGET_RECOVERY_IMAGE: boot
+
+  install_script:
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf \
+      lib32ncurses5-dev lib32z1-dev libncurses5-dev libncurses5 \
+      libncurses-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils \
+      lzop openjdk-8-jdk pngcrush schedtool squashfs-tools xsltproc \
+      zip zlib1g-dev python-is-python3 unzip fontconfig
+
+  script:
+    - git config --global user.name "manusia251"
+    - git config --global user.email "you@example.com"
+
+    # clone builder
+    - git clone https://github.com/manusia251/Lazy_Action-Recoverys-Builder builder
+    - cd builder
+
+    # build OrangeFox
+    - bash build-ofrp.sh $DEVICE_TREE $DEVICE_BRANCH $DEVICE_CODENAME $MANIFEST_BRANCH $TARGET_RECOVERY_IMAGE
+
+  artifacts:
+    path: builder/output/**/*
