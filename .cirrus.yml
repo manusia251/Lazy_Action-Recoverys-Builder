@@ -21,7 +21,7 @@ task:
 
   script:
     - git config --global user.name "manusia251"
-    - git config --global user.email "you@example.com"
+    - git config --global user.email "darkside@gmail.com"
 
     # clone builder
     - git clone https://github.com/manusia251/Lazy_Action-Recoverys-Builder builder
