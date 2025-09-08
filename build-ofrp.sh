@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # Skrip Build OrangeFox Recovery - VERSI OTOMATIS FINAL
-# Skrip ini mengotomatiskan semua langkah yang diperlukan.
 # =================================================================
 
 set -e
@@ -69,7 +68,6 @@ else
 fi
 
 # --- 5. Menerapkan Patch Otomatis ---
-# Patch ini memperbaiki masalah 'Android.host_config.mk'
 echo "--- Langkah 4: Menerapkan patch untuk memperbaiki bug VTS... ---"
 mkdir -p "$WORKDIR/builder/patches"
 cat > "$WORKDIR/builder/patches/fix-vts.patch" << 'EOF'
